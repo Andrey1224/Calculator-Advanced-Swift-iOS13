@@ -14,6 +14,25 @@ class ViewController: UIViewController {
     
     private var isFinishedTypingNumber: Bool = true
     
+    
+   private var displayValue: Double {
+        get {
+            
+            guard let number = Double(displayLabel.text!) else {
+                fatalError("Happpened with number")
+            }
+            return number
+        }
+    set {
+        
+        displayLabel.text = String(newValue)
+    }
+    
+    
+    }
+    
+    private var calculator = CalculateLogic()
+    
     @IBAction func calcButtonPressed(_ sender: UIButton) {
         
         //What should happen when a non-number button is pressed
@@ -21,29 +40,29 @@ class ViewController: UIViewController {
         
         isFinishedTypingNumber = true
         
-        
-        guard let number = Double(displayLabel.text!) else {
-            fatalError("Happpened with number")
-            
-        }
+        calculator.setNumber(displayValue)
         
         if let calcMethod = sender.currentTitle {
-            if calcMethod == "+/-" {
-                
-                displayLabel.text = String(number * -1)
-            } else if calcMethod == "AC" {
-                displayLabel.text = "0"
-            } else if calcMethod == "%" {
-                displayLabel.text = String(number * 0.01)
+            
+            
+            
+            guard let result = calculator.calculate(symbol: calcMethod) else {
+                fatalError("Probleme")
             }
             
+           displayValue = result
+            
+            
         }
+        
         
         
     }
     
     
     @IBAction func numButtonPressed(_ sender: UIButton) {
+        
+        
         
         //What should happen when a number is entered into the keypad
         
@@ -58,13 +77,10 @@ class ViewController: UIViewController {
             } else {
                 
                 if numValue == "." {
-                   
-                    guard let currentDisplayValue = Double(displayLabel.text!) else {
-                        
-                        fatalError("Cannot convert display label text to a double")
-                    }
                     
-                    let isInt = floor(currentDisplayValue) == currentDisplayValue
+                    
+                    
+                    let isInt = floor(displayValue) == displayValue
                     
                     if !isInt {
                         return
